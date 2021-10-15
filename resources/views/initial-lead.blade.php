@@ -1,14 +1,45 @@
-@extends('layout')
+
+<link rel="stylesheet" href="../../public/assets/bundle.min.css">
 
 
-@section('main')
 
-<template v-if="submitted === false">
+<div v-if="currentStep === 1" class="bg-white shadow rounded-lg">
+
+    <div class="sm:px-8 sm:py-10 px-3 py-4">
+
  
-    <div v-if="currentStep === 1" class="bg-white shadow rounded-lg">
+        <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">Is this test for you or someone else?</h3>
+        <div class="max-w-sm mx-auto">
+        <input type="radio" id="Me" name="drone" value="Me"
+        checked>
+ <label for="Me">Me</label>
+ <input type="radio" id="someone-else" name="drone" value="someone-else"
+ checked>
+<label for="someone-else">Someone Else</label>
+
+</div>
+
+        
+          
+
+            <p class="mt-1 text-sm text-red-500" v-show="errors.has('medication_rating')" v-html="errors.first('medication_rating')"></p>
+        </div>
+    </div>  
+
+
+    <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg text-center">
+        <button @click="handleForm()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+        Next &rarr;
+        </button>
+    </div>
+
+</div>
+
+    <div v-if="currentStep === 2" class="bg-white shadow rounded-lg">
 
         <div class="sm:px-8 sm:py-10 px-3 py-4">
 
+     
             <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">On a scale of 1-10 how good do you feel on your current medication(s)?</h3>
 
             <div class="max-w-sm mx-auto">
@@ -46,7 +77,7 @@
     </div>
 
 
-    <div v-if="currentStep === 2" class="bg-white shadow rounded-lg">
+    <div v-if="currentStep === 3" class="bg-white shadow rounded-lg">
 
         <div class="sm:px-8 sm:py-10 px-3 py-4">
 
@@ -176,7 +207,7 @@
     </div>
 
 
-    <div v-if="currentStep === 3" class="bg-white shadow rounded-lg">
+    <div v-if="currentStep === 4" class="bg-white shadow rounded-lg">
         
         <div v-if="medication.showSuggestions && medication.results" class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
             <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
@@ -259,538 +290,9 @@
     </div>
 
 
-    <div v-if="currentStep === 4" class="bg-white shadow rounded-lg">
+  
 
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">Do you have health insurance?</h3>
-
-            <div class="max-w-sm mx-auto">
-                <select class="mt-1 block w-full pl-3 pr-10 py-2 bg-white text-sm border-gray-300 focus:outline-none text-sm rounded-md"
-                    :class="{'border-red-500': errors.first('health_insurance')}"
-                    name="health_insurance"                                 
-                    v-validate="'required'"
-                    data-vv-as="health insurance"
-                    v-model="answers.health_insurance">
-
-                    <option value="" selected disabled>Please Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
-
-                <p class="mt-1 text-sm text-red-500" v-show="errors.has('health_insurance')" v-html="errors.first('health_insurance')"></p>
-            </div>
-        </div>  
-
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleForm()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-
-    <!-- yes to health insurance  -->
-    <div v-if="currentStep === 5" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">What is the name of your plan?</h3>
-
-            <div class="max-w-sm mx-auto">
-
-                <div v-click-outside="hideSuggestedHealthPlans" class="mt-1 relative inline-block w-full">
-                    <input type="text" class="focus:ring-blue-500 focus:border-blue-500 block w-full rounded-md text-sm border-gray-300"
-                        :class="{'border-red-500': errors.first('plan_name')}"
-                        name="plan_name"                                 
-                        v-validate="'required'"
-                        data-vv-as="plan name"
-                        @input="fetchHealthPlans"
-                        v-model="answers.plan_name">
-
-     
-                    <div v-if="healthPlan.showSuggestions" class="w-full origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-
-                        <div class="py-3 px-4">
-                            <div v-for="plan in healthPlan.result" class="font-medium text-gray-600 text-sm py-1 cursor-pointer" @click="updateHealthPlanName(plan.item)">
-                                <span v-html="plan.item"></span>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <p class="mt-1 text-sm text-red-500" v-show="errors.has('plan_name')" v-html="errors.first('plan_name')"></p>
-            </div>
-
-        </div>  
-
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleForm()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-    <div v-if="currentStep === 6" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">What state do you live in?</h3>
-
-            <div class="max-w-sm mx-auto">
-                <select class="mt-1 block w-full pl-3 pr-10 py-2 bg-white text-sm border-gray-300 focus:outline-none text-sm rounded-md"
-                    :class="{'border-red-500': errors.first('state')}"
-                    name="state"                                 
-                    v-validate="'required'"
-                    data-vv-as="state"
-                    v-data-as=""
-                    v-model="answers.state">
-
-                    <option value="" selected disabled>Select State</option>
-                    <option value="Alabama">Alabama</option>
-                    <option value="Alaska">Alaska</option>
-                    <option value="Arizona">Arizona</option>
-                    <option value="Arkansas">Arkansas</option>
-                    <option value="California">California</option>
-                    <option value="Colorado">Colorado</option>
-                    <option value="Connecticut">Connecticut</option>
-                    <option value="Delaware">Delaware</option>
-                    <option value="District Of Columbia">District Of Columbia</option>
-                    <option value="Florida">Florida</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Hawaii">Hawaii</option>
-                    <option value="Idaho">Idaho</option>
-                    <option value="Illinois">Illinois</option>
-                    <option value="Indiana">Indiana</option>
-                    <option value="Iowa">Iowa</option>
-                    <option value="Kansas">Kansas</option>
-                    <option value="Kentucky">Kentucky</option>
-                    <option value="Louisiana">Louisiana</option>
-                    <option value="Maine">Maine</option>
-                    <option value="Maryland">Maryland</option>
-                    <option value="Massachusetts">Massachusetts</option>
-                    <option value="Michigan">Michigan</option>
-                    <option value="Minnesota">Minnesota</option>
-                    <option value="Mississippi">Mississippi</option>
-                    <option value="Missouri">Missouri</option>
-                    <option value="Montana">Montana</option>
-                    <option value="Nebraska">Nebraska</option>
-                    <option value="Nevada">Nevada</option>
-                    <option value="New Hampshire">New Hampshire</option>
-                    <option value="New Jersey">New Jersey</option>
-                    <option value="New Mexico">New Mexico</option>
-                    <option value="New York">New York</option>
-                    <option value="North Carolina">North Carolina</option>
-                    <option value="North Dakota">North Dakota</option>
-                    <option value="Ohio">Ohio</option>
-                    <option value="Oklahoma">Oklahoma</option>
-                    <option value="Oregon">Oregon</option>
-                    <option value="Pennsylvania">Pennsylvania</option>
-                    <option value="Rhode Island">Rhode Island</option>
-                    <option value="South Carolina">South Carolina</option>
-                    <option value="South Dakota">South Dakota</option>
-                    <option value="Tennessee">Tennessee</option>
-                    <option value="Texas">Texas</option>
-                    <option value="Utah">Utah</option>
-                    <option value="Vermont">Vermont</option>
-                    <option value="Virginia">Virginia</option>
-                    <option value="Washington">Washington</option>
-                    <option value="West Virginia">West Virginia</option>
-                    <option value="Wisconsin">Wisconsin</option>
-                    <option value="Wyoming">Wyoming</option>
-
-                </select>
-
-                <p class="mt-1 text-sm text-red-500" v-show="errors.has('state')" v-html="errors.first('state')"></p>
-            </div>
-        </div>
-
-            <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-                <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-                &larr; Previous
-                </button>
-
-                <button @click="handleForm()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-                Next &rarr;
-                </button>
-            </div>
-        </div>
-
-    </div>
-
-
-    <div v-if="currentStep === 7" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">What is the first and last name on your insurance card?</h3>
-
-
-            <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                <div class="sm:col-span-3">
-                    <label for="first_name" class="block text-sm font-medium text-gray-600">First Name</label>
-                    <div class="mt-1">
-                        <input type="text" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                            :class="{'border-red-500': errors.first('first_name')}"
-                            name="first_name"
-                            v-validate="'required'"
-                            data-vv-as="first name"
-                            v-model="answers.first_name">
-                        <p class="mt-1 text-sm text-red-500" v-show="errors.has('first_name')" v-html="errors.first('first_name')"></p>
-                    </div>
-                </div>
-
-                <div class="sm:col-span-3">
-                    <label for="last_name" class="block text-sm font-medium text-gray-600">Last Name</label>
-                    <div class="mt-1">
-                        <input type="text" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                            :class="{'border-red-500': errors.first('last_name')}"
-                            name="last_name"
-                            v-validate="'required'"
-                            data-vv-as="last name"
-                            v-model="answers.last_name">
-
-                        <p class="mt-1 text-sm text-red-500" v-show="errors.has('last_name')" v-html="errors.first('last_name')"></p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleForm()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-    <div v-if="currentStep === 8" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <p class="text-gray-700"><span v-html="answers.first_name"></span> <span v-html="answers.last_name"></span>, We need to verify if your <span v-html="answers.plan_name"></span> insurance will cover the cost of the ClarityX test for you.</p>
-            <p class="mt-2 text-gray-700">Please click <strong>next</strong> to continue.</p>
-
-            <center>
-                <img class="w-auto h-40" src="/assets/loading-checking.gif" alt="">
-            </center>
-        </div>
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleNext()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-    <div v-if="currentStep === 9" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">What number can we send a verification text to?</h3>
-
-            <div class="max-w-sm mx-auto">
-
-                <input type="text" name="phone_number"
-                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                    :class="{'border-red-500': errors.first('phone_number')}"
-                    v-validate="'required|phoneNumber'"
-                    v-mask="'(###) ###-####'"
-                    placeholder="(___) ___-____" 
-                    data-vv-as="phone number"
-                    v-model="answers.phone_number">
-
-                <p class="mt-1 text-sm text-red-500" v-show="errors.has('phone_number')" v-html="errors.first('phone_number')"></p>
-            </div>
-
-        </div>
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleForm()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-    <div v-if="currentStep === 10" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <p class="text-gray-700"><span v-html="answers.first_name"></span> <span v-html="answers.last_name"></span>, it looks like your <span v-html="answers.plan_name"></span> insurance plan will cover the cost of the ClarityX test for you.</p>
-            <p class="mt-2 text-gray-700">Please click <strong>next</strong> to continue.</p>
-
-            <center>
-                <img class="w-auto h-40" src="/assets/loading-success.gif" alt="">
-            </center>
-        </div>
-
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleNext()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-    <div v-if="currentStep === 11" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">What is the best email to send you updates on the status of receiving your ClarityX Test</h3>
-
-            <div class="max-w-sm mx-auto">
-
-                <input type="text" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                    :class="{'border-red-500': errors.first('email_address')}"
-                    name="email_address"
-                    v-validate="'required|email'"
-                    data-vv-as="email address"
-                    v-model="answers.email_address">
-
-                <p class="mt-1 text-sm text-red-500" v-show="errors.has('email_address')" v-html="errors.first('email_address')"></p>
-
-            </div>
-
-        </div>
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleForm(13)" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-
-    <!-- NO to health insurance  -->
-    <div v-if="currentStep === 12" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 mb-4 pb-4 border-b border-dashed">
-                <div class="sm:col-span-1">
-                    <img class="w-auto h-32 m-auto" src="{{ url('assets/clarityx-box.png') }}" alt="ClarityX">
-                </div>
-                <div class="sm:col-span-1 text-center sm:text-left sm:flex sm:items-center">
-                    <div class="font-bold text-lg">
-                        Get your test kit today for only:
-                        <span class="block font-bold text-green-500">$330</<span>
-                    </div>
-                    
-                </div>
-            </div>
-
-
-            <div class="text-center mb-6">
-                <h3 class="text-2xl leading-tight text-gray-700 font-medium">We can send you additional information for a self pay option.</h3>
-                <p class="mt-1 text-lg text-gray-600 leading-tight">Please fill out the information below</p>
-            </div>
-
-            <div class="mb-4 grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                <div class="sm:col-span-3">
-                    <label for="first_name" class="block text-sm font-medium text-gray-600">First Name</label>
-                    <div class="mt-1">
-                        <input type="text" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                            :class="{'border-red-500': errors.first('first_name')}"
-                            name="first_name"
-                            v-validate="'required'"
-                            data-vv-as="first name"
-                            v-model="answers.first_name">
-                        <p class="mt-1 text-sm text-red-500" v-show="errors.has('first_name')" v-html="errors.first('first_name')"></p>
-                    </div>
-                </div>
-
-                <div class="sm:col-span-3">
-                    <label for="last_name" class="block text-sm font-medium text-gray-600">Last Name</label>
-                    <div class="mt-1">
-                        <input type="text" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                            :class="{'border-red-500': errors.first('last_name')}"
-                            name="last_name"
-                            v-validate="'required'"
-                            data-vv-as="last name"
-                            v-model="answers.last_name">
-
-                        <p class="mt-1 text-sm text-red-500" v-show="errors.has('last_name')" v-html="errors.first('last_name')"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label for="email_address" class="block text-sm font-medium text-gray-600">Email Address</label>
-                <input type="text" class="mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                    :class="{'border-red-500': errors.first('email_address')}"
-                    name="email_address"
-                    v-validate="'required|email'"
-                    data-vv-as="email address"
-                    v-model="answers.email_address">
-
-                <p class="mt-1 text-sm text-red-500" v-show="errors.has('email_address')" v-html="errors.first('email_address')"></p>
-            </div>
-
-
-            <div>
-                <label for="phone_number" class="block text-sm font-medium text-gray-600">Phone Number</label>
-                <input type="text" name="phone_number"
-                    class="mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border-gray-300 rounded-md"
-                    placeholder="(___) ___-____" 
-                    v-mask="'(###) ###-####'"
-                    v-model="answers.phone_number">
-                <p class="mt-1 text-sm text-gray-500">Please put a number to receive a text verification</p>
-            </div>
-
-        </div>
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious(4)" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="handleForm(13)" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-            Next &rarr;
-            </button>
-        </div>
-
-    </div>
-
-
-
-    <!-- Terms  -->
-    <div v-if="currentStep === 13" class="bg-white shadow rounded-lg">
-
-        <div class="sm:px-8 sm:py-10 px-3 py-4">
-            <h3 class="text-center mb-6 md:mb-8 text-2xl leading-tight text-gray-700 font-medium">Terms and Conditions</h3>
-
-
-            <div class="border bg-gray-50 rounded-sm p-2.5 text-gray-700 text-sm md:h-auto h-48 overflow-scroll">
-                <p>By Selecting "I Accept" you verify and consent to be contacted and receive information by ClarityX. You may be contacted by phone, email or text by our customer support team. You may revoke this consent at any time by contacting us via phone or unsubscribing.For example, by remembering your contact and other information when you access or use the Site.</p>
-            </div>
-
-
-            <div class="flex items-start mt-4">
-                <div class="flex items-center h-5">
-                    <input id="terms_accepted" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                        name="terms_accepted"
-                        v-validate="'required'"
-                        data-vv-as="terms and conditions"
-                        v-model="answers.terms_accepted">
-                </div>
-                <div class="ml-3 text-sm">
-                    <label for="comments" class="font-medium text-gray-700">I Accept</label>
-                    <p class="text-gray-500">Please click I Accept to submit your Information.</p>
-                </div>
-            </div>
-
-            <p class="mt-1 text-sm text-red-500" v-show="errors.has('terms_accepted')" v-html="errors.first('terms_accepted')"></p>
-        
-        </div>
-
-        <div class="sm:px-8 sm:py-4 p-3 bg-gray-100 rounded-b-lg flex justify-between">
-            <button @click="handlePrevious()" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-            &larr; Previous
-            </button>
-
-            <button @click="completeSubmission()" :disabled="isSubmitting" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-                <svg v-if="isSubmitting" class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span v-if="isSubmitting">Please Wait...</span>
-                <span v-else>Submit</span>
-            </button>
-        </div>
-
-    </div>
-
-
-</template>
-
-
-<div v-if="submitted === true" class="bg-white shadow sm:rounded-lg">
-
-    <div class="px-8 py-6 md:py-12 text-center">
-        <center>
-            <img class="h-20 w-20" src="{{ url('assets/check-icon.png') }}">
-        </center>
-
-        <h3 class="text-lg font-bold mt-5 mb-1 leading-tight text-gray-700">Thank you for your completed submission!</h3>
-        <p class="text-gray-600">For the next steps in receiving your ClarityX test you can check your email or click continue below.</p>
-    </div>  
-
-
-    <div class="px-8 py-4 bg-gray-100 sm:rounded-b-lg text-center">
-        <a :href="continue_url" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-        Continue &rarr;
-        </a>
-    </div>
-
-</div>
-
-
- <div aria-live="assertive" class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
-    <div class="w-full flex flex-col items-center space-y-4">
-      
-      <transition enter-active-class="transform ease-out duration-300 transition" enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
-        <div v-if="notify.error" class="max-w-lg w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
-          <div class="p-4">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-
-              </div>
-              <div class="ml-3 w-0 flex-1 pt-0.5">
-                <p class="text-sm font-medium text-gray-900">
-                    Something went wrong!
-                </p>
-                <p class="mt-1 text-sm text-gray-500" v-html="notify.message"></p>
-              </div>
-              <div class="ml-4 flex-shrink-0 flex">
-                <button @click="notify.error = false" class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  <span class="sr-only">Close</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-              </div>
+   
             </div>
           </div>
         </div>
@@ -854,7 +356,7 @@ var app = new Vue({
         medication: {
             debounce: null,
             results: '',
-            showSuggestions: false,
+            showSuggestions: true,
         },
 
         healthPlan: {
@@ -870,19 +372,10 @@ var app = new Vue({
         },
 
         stepAndQuestions: {
-            1: 'On a scale of 1-10 how good do you feel on your current medication(s)?',
-            2: 'What type of prescription medications are you currently taking?',
-            3: 'List the medications you are currently taking',
-            4: 'Do you have health insurance?',
-            5: 'What is the name of your plan?',
-            6: 'What state do you live in?',
-            7: 'What is the first and last name on your insurance card?',
-            8: 'Insurance verification',
-            9: 'What number can we send a verification text to?',
-            10: 'Insurance verification processed',
-            11: 'What is the best email to send you updates on the status of receiving your ClarityX Test',
-            12: 'We can send you additional information for a self pay option.',
-            13: 'Terms and Conditions',
+            1: 'Is this test for you or someone else?',
+            2: 'On a scale of 1-10 how good do you feel on your current medication(s)?',
+            3: 'What type of prescription medications are you currently taking?',
+            4: 'List the medications you are currently taking',
         },
 
         questionAnswered: [],
