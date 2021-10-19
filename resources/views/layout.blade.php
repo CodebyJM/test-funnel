@@ -21,59 +21,13 @@
 
     <link rel="icon" href="{{ url('assets/favicon.png') }}" sizes="32x32" />
 
-    <link rel="stylesheet" href="../../public/assets/bundle.min.css">
+    <link rel="stylesheet" href="{{ url('assets/bundle.min.css') }}">
     <script src="{{ url('assets/bundle.min.js') }}"></script>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-159755893-2"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-159755893-2');
-    </script>
-
-    <!-- Hotjar Tracking Code for https://form.clarityxdna.com -->
-    <script>
-        (function(h,o,t,j,a,r){
-            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-            h._hjSettings={hjid:2571754,hjsv:6};
-            a=o.getElementsByTagName('head')[0];
-            r=o.createElement('script');r.async=1;
-            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-    </script>
-
-    <!-- Taboola Pixel Code -->
-    <script type='text/javascript'>
-      window._tfa = window._tfa || [];
-      window._tfa.push({notify: 'event', name: 'page_view', id: 1388801});
-      !function (t, f, a, x) {
-             if (!document.getElementById(x)) {
-                t.async = 1;t.src = a;t.id=x;f.parentNode.insertBefore(t, f);
-             }
-      }(document.createElement('script'),
-      document.getElementsByTagName('script')[0],
-      '//cdn.taboola.com/libtrc/unip/1388801/tfa.js',
-      'tb_tfa_script');
-    </script>
-    <!-- End of Taboola Pixel Code -->
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MKPTN5J');</script>
-    <!-- End Google Tag Manager -->
-
+    {{-- tracking code here --}}
+    
 </head>
 <body class="antialiased min-h-screen bg-gray-100">
-
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MKPTN5J" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
 
     <div id="app" class="flex flex-col h-screen justify-between">
         
@@ -117,7 +71,7 @@
         <footer>
             <div class="max-w-7xl mx-auto py-4 px-3 overflow-hidden sm:px-6">
                 <center>
-                    <img class="h-10 w-auto" src="../../public/assets/hipaa-badge.png">
+                    <img class="h-10 w-auto" src="{{ url('assets/hipaa-badge.png') }}">
                 </center>
             </div>
         </footer>
